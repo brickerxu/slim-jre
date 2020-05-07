@@ -55,6 +55,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Src\Base\Dir.cs" />
+    <Compile Include="Src\Service\JarService.cs" />
+    <Compile Include="Src\Service\JdepsService.cs" />
+    <Compile Include="Src\Service\MainService.cs" />
+    <Compile Include="Src\Service\Tools\JarTool.cs" />
+    <Compile Include="Src\Utils\StringUtils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -96,6 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\Entity\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

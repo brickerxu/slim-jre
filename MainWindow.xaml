@@ -25,9 +25,9 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Label Grid.Row="0" Grid.Column="0" Content="Jar路径:" />
-            <TextBox Grid.Row="0" Grid.Column="1" Height="23" VerticalContentAlignment="Center" IsReadOnly="True"/>
-            <Button Grid.Row="0" Grid.Column="2" Content="选择" Margin="5,0" />
-            <Button Grid.Row="0" Grid.Column="3" Content="开始" Margin="0,0,5,0" />
+            <TextBox x:Name="pathTextBox" Grid.Row="0" Grid.Column="1" Height="23" VerticalContentAlignment="Center" IsReadOnly="True"/>
+            <Button Grid.Row="0" Grid.Column="2" Content="选择" Margin="5,0" Click="ChooseJarClick" />
+            <Button Grid.Row="0" Grid.Column="3" Content="开始" Margin="0,0,5,0" Click="StartClick" />
         </Grid>
         <TextBlock Grid.Row="1" Grid.Column="0" />
     </Grid>
