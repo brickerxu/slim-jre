@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using slim_jre.Entity;
 
 namespace slim_jre.Service
 {
@@ -12,12 +8,12 @@ namespace slim_jre.Service
 
         public MainService()
         {
-            this.jarService = new JarService();
+            jarService = new JarService();
         }
 
         public void StartWork(string jarPath)
-        { 
-            
+        {
+            Jar jar = jarService.ReadJar(jarPath);
         }
     }
 }

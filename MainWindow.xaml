@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:slim_jre"
         mc:Ignorable="d"
         Title="JRE精简" Height="450" Width="650" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -11,13 +10,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="14*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
         <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition FrameworkElement.FlowDirection="RightToLeft"/>
                 <ColumnDefinition Width="7*"></ColumnDefinition>

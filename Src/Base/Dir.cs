@@ -38,7 +38,7 @@ namespace slim_jre.Base
 
         static Dir()
         {
-            applicationPath = System.AppDomain.CurrentDomain.BaseDirectory;
+            applicationPath = AppDomain.CurrentDomain.BaseDirectory;
             tempDirPath = Path.Combine(applicationPath, "temp");
             jdkDirPath = Environment.GetEnvironmentVariable("JAVA_HOME");
             if (StringUtils.isNotEmpty(jdkDirPath))
@@ -48,6 +48,13 @@ namespace slim_jre.Base
                 jdepsPath = Path.Combine(jdkBinPath, "jdeps.exe");
                 jreDirPath = Path.Combine(jdkDirPath, "jre");
             }
+            init();
+        }
+
+        private static void init()
+        {
+            FileUtils.Remove(tempDirPath);
+            Directory.CreateDirectory(tempDirPath);
         }
     }
 }

@@ -55,11 +55,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Src\Base\CommonConstant.cs" />
     <Compile Include="Src\Base\Dir.cs" />
+    <Compile Include="Src\Entity\Jar.cs" />
+    <Compile Include="Src\Os\CommandExecutor.cs" />
     <Compile Include="Src\Service\JarService.cs" />
     <Compile Include="Src\Service\JdepsService.cs" />
     <Compile Include="Src\Service\MainService.cs" />
     <Compile Include="Src\Service\Tools\JarTool.cs" />
+    <Compile Include="Src\Utils\FileUtils.cs" />
+    <Compile Include="Src\Utils\Md5Utils.cs" />
     <Compile Include="Src\Utils\StringUtils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
