@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Src\Adapter.cs" />
     <Compile Include="Src\Base\CommonConstant.cs" />
     <Compile Include="Src\Base\Dir.cs" />
     <Compile Include="Src\Entity\Jar.cs" />

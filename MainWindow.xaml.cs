@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Windows;
 using Microsoft.Win32;
 using slim_jre.Base;
@@ -12,9 +13,12 @@ namespace slim_jre
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        private string path;
         public MainWindow()
         {
             InitializeComponent();
+            Adapter.dAppendText += AppendText;
         }
 
         private void ChooseJarClick(object sender, RoutedEventArgs e)
@@ -28,6 +32,7 @@ namespace slim_jre
             }
             string fileName = dialog.FileName;
             PathTextBox.Text = fileName;
+            path = fileName;
         }
 
         private void StartClick(object sender, RoutedEventArgs e)
@@ -45,8 +50,31 @@ namespace slim_jre
                 MessageBox.Show("请检查是否设置jdk环境变量", "提示");
                 return;
             }
+            Console.Document.Blocks.Clear();
+            Thread th = new Thread(new ThreadStart(StartWork)); //也可简写为new Thread(ThreadMethod);                
+            th.Start();
+            
+        }
+
+        private void StartWork()
+        {
             MainService mainService = new MainService();
-            mainService.StartWork(path, this);
+            mainService.StartWork(path);
+        }
+
+
+        private void AppendText(string text)
+        {
+            Dispatcher.Invoke(delegate
+            {
+                if (Console.Document.Blocks.Count > 2500)
+                {
+                    Console.Document.Blocks.Clear();
+                }
+                Console.AppendText(text);
+                Console.ScrollToEnd();
+            }); 
+            
         }
 
         private bool CheckJdk()
