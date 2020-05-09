@@ -6,14 +6,18 @@ namespace slim_jre.Service
     {
         private JarService jarService;
 
+        private JdepsService jdepsService;
+
         public MainService()
         {
             jarService = new JarService();
+            jdepsService = new JdepsService();
         }
 
-        public void StartWork(string jarPath)
+        public void StartWork(string jarPath, MainWindow window)
         {
             Jar jar = jarService.ReadJar(jarPath);
+            jdepsService.Verbose(jar, window.Console);
         }
     }
 }

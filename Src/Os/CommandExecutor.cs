@@ -1,59 +1,81 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using slim_jre.Base;
+using slim_jre.Os.Interfaces;
 using slim_jre.Utils;
 
 namespace slim_jre.Os
 {
     class CommandExecutor
     {
-        public static string Execute(string command)
+        public static void Execute(string command, ICommandReceiver receiver)
         {
-            return Execute(null, command, false);
+            Execute(null, command, false, receiver);
         }
-        
+
         public static string Execute(string workDir, string command)
         {
-            return Execute(workDir, command, false);
+            DefaultCommandReceiver receiver = new DefaultCommandReceiver();
+            Execute(workDir, command, false, receiver);
+            return receiver.GetOutput();
         }
 
-        public static string Execute(string workDir, string command, bool showWindow)
+        public static void Execute(string workDir, string command, bool showWindow, ICommandReceiver receiver)
         {
             Process process = new Process();
-            if (StringUtils.isNotEmpty(workDir))
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            if (StringUtils.isEmpty(workDir))
             {
-                process.StartInfo.WorkingDirectory = workDir;
+                workDir = Dir.tempDirPath;
             }
-            else
-            {
-                process.StartInfo.WorkingDirectory = Dir.tempDirPath;
-            }
+            startInfo.WorkingDirectory = workDir;
+            startInfo.FileName = "cmd.exe";//设定需要执行的命令  
+            startInfo.Arguments = "";//“/C”表示执行完命令后马上退出  
+            startInfo.UseShellExecute = false;//不使用系统外壳程序启动  
+            startInfo.RedirectStandardInput = true;//不重定向输入  
+            startInfo.RedirectStandardOutput = true; //重定向输出  
+            startInfo.CreateNoWindow = !showWindow;//不创建窗口
 
-            
-            //设置要启动的应用程序
-            process.StartInfo.FileName = "cmd.exe";
-            //是否使用操作系统shell启动
-            process.StartInfo.UseShellExecute = false;
-            // 接受来自调用程序的输入信息             
-            process.StartInfo.RedirectStandardInput = true;
-            //输出信息
-            process.StartInfo.RedirectStandardOutput = true;
-            // 输出错误
-            process.StartInfo.RedirectStandardError = true;
-            //不显示程序窗口
-            process.StartInfo.CreateNoWindow = !showWindow;
-            //启动程序
-            process.Start();
-            
-            //向cmd窗口发送输入信息
-            process.StandardInput.WriteLine(command + "&exit");
-            
-            process.StandardInput.AutoFlush = true;
-            //获取输出信息
-            string output = process.StandardOutput.ReadToEnd();
-            //等待程序执行完退出进程
-            process.WaitForExit();
-            process.Close();
-            return output;
+            process.StartInfo = startInfo;
+            if (process.Start()) //开始进程  
+            {
+                process.StandardOutput.ReadLine().Trim();
+                process.StandardOutput.ReadLine().Trim();
+                if (command.Length > 0)
+                {
+                    process.StandardInput.WriteLine(command);
+                    process.StandardOutput.ReadLine().Trim();
+
+                    process.StandardInput.WriteLine("\n");
+                    string log = process.StandardOutput.ReadLine().Trim();
+                    if (null != receiver)
+                    {
+                        receiver.Command(log);
+                    }
+
+                    string path = workDir + ">";
+                    do
+                    {
+                        if (null != receiver && receiver.IsCancelled())
+                        {
+                            break;
+                        }
+
+                        string logm = process.StandardOutput.ReadLine().Trim();
+                        if (path.Equals(logm))
+                        {
+                            break;
+                        }
+
+                        if (null != receiver)
+                        {
+                            receiver.Output(logm + CommonConstant.EOF);
+                        }
+                    } while (true);
+                }
+
+                process.Close();
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿using Microsoft.Win32;
+﻿using System.IO;
+using System.Windows;
+using Microsoft.Win32;
 using slim_jre.Base;
 using slim_jre.Service;
 using slim_jre.Utils;
-using System.IO;
-using System.Windows;
 
 namespace slim_jre
 {
@@ -27,12 +27,12 @@ namespace slim_jre
                 return;
             }
             string fileName = dialog.FileName;
-            pathTextBox.Text = fileName;
+            PathTextBox.Text = fileName;
         }
 
         private void StartClick(object sender, RoutedEventArgs e)
         {
-            string path = pathTextBox.Text;
+            string path = PathTextBox.Text;
             if (StringUtils.isEmpty(path))
             {
                 MessageBox.Show("请选择Jar包", "提示");
@@ -46,7 +46,7 @@ namespace slim_jre
                 return;
             }
             MainService mainService = new MainService();
-            mainService.StartWork(path);
+            mainService.StartWork(path, this);
         }
 
         private bool CheckJdk()
@@ -61,6 +61,5 @@ namespace slim_jre
             }
             return true;
         }
-        
     }
 }
