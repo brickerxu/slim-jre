@@ -27,5 +27,10 @@ namespace slim_jre.Os
         {
             return output.ToString();
         }
+
+        public void SetCancel(bool cancel)
+        {
+            this.cancel = cancel;
+        }
     }
 }

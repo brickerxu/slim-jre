@@ -58,6 +58,7 @@
     <Compile Include="Src\Adapter.cs" />
     <Compile Include="Src\Base\CommonConstant.cs" />
     <Compile Include="Src\Base\Dir.cs" />
+    <Compile Include="Src\Entity\DependencyInfo.cs" />
     <Compile Include="Src\Entity\Jar.cs" />
     <Compile Include="Src\Os\CommandExecutor.cs" />
     <Compile Include="Src\Os\DefaultCommandReceiver.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Src\Service\JdepsService.cs" />
     <Compile Include="Src\Service\MainService.cs" />
     <Compile Include="Src\Service\Receivers\JdepsCommandReceiver.cs" />
+    <Compile Include="Src\Service\Receivers\RegexConstant.cs" />
     <Compile Include="Src\Service\Tools\JarTool.cs" />
     <Compile Include="Src\Service\Tools\JdepsTool.cs" />
     <Compile Include="Src\Utils\FileUtils.cs" />

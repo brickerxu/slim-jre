@@ -17,7 +17,7 @@ namespace slim_jre.Service
         public void StartWork(string jarPath)
         {
             Jar jar = jarService.ReadJar(jarPath);
-            jdepsService.Verbose(jar);
+            DependencyInfo di = jdepsService.Verbose(jar);
         }
     }
 }

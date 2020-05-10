@@ -74,7 +74,7 @@ namespace slim_jre
                 Console.AppendText(text);
                 Console.ScrollToEnd();
             }); 
-            
+            Thread.Sleep(1);
         }
 
         private bool CheckJdk()
