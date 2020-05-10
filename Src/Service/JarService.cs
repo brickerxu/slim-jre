@@ -32,21 +32,17 @@ namespace slim_jre.Service
             string[] lines = text.Split(new string[] {CommonConstant.EOF}, StringSplitOptions.None);
             foreach (string line in lines)
             {
-                if (line.Contains("Main-Class"))
+                if (line.Contains("Class-Path"))
                 {
-                    jar.mainClass = line.Split(':')[1];
-                }
-                else if (line.Contains("Class-Path"))
-                {
-                    List<string> classPaths = new List<string>();
-                    string[] libs = line.Split(new string[] {": "}, StringSplitOptions.None)[1].Split(' ');
+                    List<string> libs = new List<string>();
+                    string[] libArray = line.Split(new string[] {": "}, StringSplitOptions.None)[1].Split(' ');
                     string rootPath = Directory.GetParent(jar.path).FullName;
-                    foreach (string lib in libs)
+                    foreach (string lib in libArray)
                     {
-                        classPaths.Add(Path.Combine(rootPath, lib));
+                        libs.Add(Path.Combine(rootPath, lib));
                     }
 
-                    jar.classPaths = classPaths;
+                    jar.libs = libs;
                 }
             }
         }

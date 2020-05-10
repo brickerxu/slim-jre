@@ -67,6 +67,11 @@ namespace slim_jre
         {
             Dispatcher.Invoke(delegate
             {
+                if (!text.EndsWith(CommonConstant.EOF))
+                {
+                    text += CommonConstant.EOF;
+                }
+
                 if (Console.Document.Blocks.Count > 2500)
                 {
                     Console.Document.Blocks.Clear();

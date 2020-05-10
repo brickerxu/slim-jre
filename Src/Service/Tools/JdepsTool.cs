@@ -13,7 +13,7 @@ namespace slim_jre.Service.Tools
         {
             StringBuilder command = new StringBuilder(Dir.jdepsPath);
             command.Append(" -verbose:class ").Append(jar.path);
-            foreach (string lib in jar.classPaths)
+            foreach (string lib in jar.libs)
             {
                 command.Append(" ").Append(lib);
             }

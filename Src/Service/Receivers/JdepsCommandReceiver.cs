@@ -9,43 +9,29 @@ namespace slim_jre.Service.Receivers
 {
     public class JdepsCommandReceiver : DefaultCommandReceiver
     {
-        private DependencyInfo dependencyInfo;
 
-        /**
-         * 是否为主jar
-         */
-        private bool mainJar;
+        Jar jar;
+
+        string lastJarName;
+
+        Jar currentJar;
+
+        JarClass currentJarClass;
         
-        /**
-         * 是否跳过当前Class
-         */
-        private bool skipClass;
-
-        /**
-         * 需要查找的class集合
-         * 主Jar全部查找
-         */
-        private List<string> classScope;
-
-        public JdepsCommandReceiver(DependencyInfo di, List<string> classScope)
+        public List<Jar> jars;
+            
+        public JdepsCommandReceiver(Jar jar)
         {
-            dependencyInfo = di;
-            mainJar = classScope.Count == 0;
-            this.classScope = classScope.Distinct().ToList();
-            skipClass = false;
+            jars = new List<Jar>();
+            this.jar = jar;
+            this.currentJar = jar;
         }
 
         public override void Output(string log)
         {
-            // Adapter.dAppendText(log);
             Match match = RegexConstant.DEPENDENCY_CLASS_REGEX.Match(log);
             if (match.Success)
             {
-                if (skipClass)
-                {
-                    return;
-                }
-
                 GroupCollection gcs = match.Groups;
                 string dependencyClassName = gcs[1].Value;
                 string dependencyJarName = "";
@@ -54,73 +40,37 @@ namespace slim_jre.Service.Receivers
                     dependencyClassName = gcs[2].Value;
                     dependencyJarName = gcs[3].Value;
                 }
-
                 if (StringUtils.isEmpty(dependencyJarName))
                 {
-                    dependencyInfo.dependencyJreClass.Add(dependencyClassName);
-                    return;
+                    currentJarClass.dependencyJreClass.Add(dependencyClassName);
                 }
-                if (dependencyJarName.Equals(dependencyInfo.jarName))
+                else if (dependencyJarName.Equals(currentJar.jarName))
                 {
-                    if (mainJar)
-                    {
-                        return;
-                    }
-
-                    if (dependencyInfo.readClassName.Contains(dependencyClassName))
-                    {
-                        return;
-                    }
-
-                    if (!dependencyInfo.dependencyThirdClass.Keys.Contains(dependencyInfo.path))
-                    {
-                        dependencyInfo.dependencyThirdClass.Add(dependencyInfo.path, new List<string>());
-                    }
+                    currentJarClass.dependencySelfClass.Add(dependencyClassName);
                 }
-
-                Dictionary<string, List<string>>.KeyCollection keys = dependencyInfo.dependencyThirdClass.Keys;
-                foreach (string key in keys)
+                else
                 {
-                    if (key.Contains(dependencyJarName))
+                    if (!currentJarClass.dependencyThirdClass.ContainsKey(dependencyJarName))
                     {
-                        dependencyInfo.dependencyThirdClass[key].Add(dependencyClassName);
-                        return;
+                        currentJarClass.dependencyThirdClass.Add(dependencyJarName, new List<string>());
                     }
+                    currentJarClass.dependencyThirdClass[dependencyJarName].Add(dependencyClassName);
+                    
                 }
+
+                return;
             }
 
-            if (!mainJar)
+            match = RegexConstant.CLASS_NAME_REGEX.Match(log);
+            if (match.Success)
             {
-                match = RegexConstant.CLASS_NAME_REGEX.Match(log);
-                if (match.Success)
-                {
-                    if (classScope.Count == 0)
-                    {
-                        SetCancel(true);
-                        return;
-                    }
-
-                    string className = match.Groups[1].Value;
-                    if (classScope.Contains(className))
-                    {
-                        if (dependencyInfo.readClassName.Contains(className))
-                        {
-                            skipClass = true;
-                        }
-                        else
-                        {
-                            skipClass = false;
-                            dependencyInfo.readClassName.Add(className);
-                        }
-                        classScope.Remove(className);
-                    }
-                    else
-                    {
-                        skipClass = true;
-                    }
-
-                    return;
-                }
+                string className = match.Groups[1].Value;
+                JarClass jc = new JarClass();
+                jc.className = className;
+                jc.jar = currentJar;
+                currentJar.classes.Add(jc);
+                currentJarClass = jc;
+                return;
             }
             
             match = RegexConstant.DEPENDENCY_JAR_REGEX.Match(log);
@@ -128,20 +78,24 @@ namespace slim_jre.Service.Receivers
             {
                 GroupCollection gcs = match.Groups;
                 string jarName = gcs[1].Value;
-                if (StringUtils.isEmpty(dependencyInfo.jarName))
-                {
-                    dependencyInfo.jarName = jarName;
-                }
-                // 只解析第一个jar包
-                // 后续通过依赖关系递归解析
-                else if (!dependencyInfo.jarName.Equals(jarName))
-                {
-                    SetCancel(true);
-                    return;
-                }
                 string dependencyJarPath = gcs[2].Value;
-                dependencyInfo.dependencyThirdClass.Add(dependencyJarPath, new List<string>());
-                
+                if (StringUtils.isEmpty(lastJarName))
+                {
+                    jar.jarName = jarName;
+                    jar.libs.Clear();
+                    lastJarName = jarName;
+                    Adapter.dAppendText(jarName);
+                }
+                else if (!lastJarName.Equals(jarName))
+                {
+                    Jar newJar = new Jar();
+                    newJar.jarName = jarName;
+                    jars.Add(newJar);
+                    currentJar = newJar;
+                    lastJarName = jarName;
+                }
+                Adapter.dAppendText(dependencyJarPath);
+                currentJar.libs.Add(dependencyJarPath);
             }
         }
     }

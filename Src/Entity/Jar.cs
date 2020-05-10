@@ -6,10 +6,18 @@ namespace slim_jre.Entity
     {
         public string md5;
 
+        public string jarName;
+
         public string path;
 
-        public string mainClass;
+        /**
+         * jar包包含的所有类
+         */
+        public List<JarClass> classes = new List<JarClass>();
 
-        public List<string> classPaths;
+        /**
+         * 依赖的jar包路径
+         */
+        public List<string> libs = new List<string>();
     }
 }

@@ -58,8 +58,8 @@
     <Compile Include="Src\Adapter.cs" />
     <Compile Include="Src\Base\CommonConstant.cs" />
     <Compile Include="Src\Base\Dir.cs" />
-    <Compile Include="Src\Entity\DependencyInfo.cs" />
     <Compile Include="Src\Entity\Jar.cs" />
+    <Compile Include="Src\Entity\JarClass.cs" />
     <Compile Include="Src\Os\CommandExecutor.cs" />
     <Compile Include="Src\Os\DefaultCommandReceiver.cs" />
     <Compile Include="Src\Os\Interfaces\ICommandReceiver.cs" />
