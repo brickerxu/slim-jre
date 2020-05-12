@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using slim_jre.Base;
 using slim_jre.Entity;
 using slim_jre.Os;
 using slim_jre.Utils;
@@ -40,21 +41,17 @@ namespace slim_jre.Service.Receivers
                     dependencyClassName = gcs[2].Value;
                     dependencyJarName = gcs[3].Value;
                 }
-                if (StringUtils.isEmpty(dependencyJarName))
-                {
-                    currentJarClass.dependencyJreClass.Add(dependencyClassName);
-                }
-                else if (dependencyJarName.Equals(currentJar.jarName))
+                if (dependencyJarName.Equals(currentJar.jarName))
                 {
                     currentJarClass.dependencySelfClass.Add(dependencyClassName);
                 }
                 else
                 {
-                    if (!currentJarClass.dependencyThirdClass.ContainsKey(dependencyJarName))
+                    if (!currentJarClass.dependencyOtherClass.ContainsKey(dependencyJarName))
                     {
-                        currentJarClass.dependencyThirdClass.Add(dependencyJarName, new List<string>());
+                        currentJarClass.dependencyOtherClass.Add(dependencyJarName, new List<string>());
                     }
-                    currentJarClass.dependencyThirdClass[dependencyJarName].Add(dependencyClassName);
+                    currentJarClass.dependencyOtherClass[dependencyJarName].Add(dependencyClassName);
                     
                 }
 
@@ -82,7 +79,8 @@ namespace slim_jre.Service.Receivers
                 if (StringUtils.isEmpty(lastJarName))
                 {
                     jar.jarName = jarName;
-                    jar.libs.Clear();
+                    jar.thirdLibs.Clear();
+                    jar.jreLibs.Clear();
                     lastJarName = jarName;
                     Adapter.dAppendText(jarName);
                 }
@@ -95,7 +93,14 @@ namespace slim_jre.Service.Receivers
                     lastJarName = jarName;
                 }
                 Adapter.dAppendText(dependencyJarPath);
-                currentJar.libs.Add(dependencyJarPath);
+                if (dependencyJarPath.StartsWith(Dir.jreDirPath))
+                {
+                    currentJar.jreLibs.Add(dependencyJarPath);
+                }
+                else
+                {
+                    currentJar.thirdLibs.Add(dependencyJarPath); 
+                }
             }
         }
     }

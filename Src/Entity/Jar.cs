@@ -16,8 +16,13 @@ namespace slim_jre.Entity
         public List<JarClass> classes = new List<JarClass>();
 
         /**
-         * 依赖的jar包路径
+         * 依赖的jre jar包路径
          */
-        public List<string> libs = new List<string>();
+        public List<string> jreLibs = new List<string>();
+        
+        /**
+         * 依赖的第三方jar包路径
+         */
+        public List<string> thirdLibs = new List<string>();
     }
 }

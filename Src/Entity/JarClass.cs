@@ -11,18 +11,13 @@ namespace slim_jre.Entity
         public Jar jar;
 
         /**
-         * 依赖的jre中的类
-         */
-        public List<string> dependencyJreClass = new List<string>();
-        
-        /**
          * 依赖自身的类
          */
         public List<string> dependencySelfClass = new List<string>();
 
         /**
-         * 依赖的第三方jar的类
+         * 依赖的非自身jar的类
          */
-        public Dictionary<string, List<string>> dependencyThirdClass = new Dictionary<string, List<string>>();
+        public Dictionary<string, List<string>> dependencyOtherClass = new Dictionary<string, List<string>>();
     }
 }

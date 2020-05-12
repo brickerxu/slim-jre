@@ -16,6 +16,7 @@ namespace slim_jre.Service
             jar.md5 = Md5Utils.GetFileMD5(jarPath);
             jar.path = jarPath;
             ReadManifest(jar);
+            jar.jreLibs = GetJreJars();
             return jar;
         }
 
@@ -42,9 +43,15 @@ namespace slim_jre.Service
                         libs.Add(Path.Combine(rootPath, lib));
                     }
 
-                    jar.libs = libs;
+                    jar.thirdLibs = libs;
                 }
             }
+        }
+
+        private List<string> GetJreJars()
+        {
+            string jreLibDirPath = Path.Combine(Dir.jreDirPath, "lib");
+            return FileUtils.GetFile(jreLibDirPath, "jar");
         }
     }
 }

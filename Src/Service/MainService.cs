@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using slim_jre.Entity;
 
@@ -12,6 +13,8 @@ namespace slim_jre.Service
 
         private List<string> analysisedClasses = new List<string>();
 
+        private List<string> jreJarNames = new List<string>();
+
         public MainService()
         {
             jarService = new JarService();
@@ -22,40 +25,42 @@ namespace slim_jre.Service
         {
             Jar jar = jarService.ReadJar(jarPath);
             List<Jar> jars = jdepsService.Verbose(jar);
-            List<string> jreClasses = GetDependencyJreClass(jar, jars);
+            jreJarNames = GetJreJarNames(jar, jars);
+            Dictionary<string, List<string>> jreClasseDic = GetDependencyJreClass(jar, jars);
         }
 
-        private List<string> GetDependencyJreClass(Jar jar, List<Jar> jars)
+        private Dictionary<string, List<string>> GetDependencyJreClass(Jar jar, List<Jar> jars)
         {
-            List<string> jreClasses = new List<string>();
             List<JarClass> jarClasses = jar.classes;
             Dictionary<string, List<string>> dependencyClassDic = new Dictionary<string, List<string>>();
             foreach (JarClass jc in jarClasses)
             {
-                jreClasses.AddRange(jc.dependencyJreClass);
-                foreach (string key in jc.dependencyThirdClass.Keys)
+                foreach (string key in jc.dependencyOtherClass.Keys)
                 {
                     if (dependencyClassDic.ContainsKey(key))
                     {
-                        dependencyClassDic[key].AddRange(jc.dependencyThirdClass[key]);
+                        dependencyClassDic[key].AddRange(jc.dependencyOtherClass[key]);
                     }
                     else
                     {
-                        dependencyClassDic.Add(key, jc.dependencyThirdClass[key]);
+                        dependencyClassDic.Add(key, jc.dependencyOtherClass[key]);
                     }
                 }
             }
-            jreClasses.AddRange(GetDependencyJreClass(dependencyClassDic, jars));
-            return jreClasses.Distinct().ToList();
+            return GetDependencyJreClass(dependencyClassDic, jars);
         }
 
-        private List<string> GetDependencyJreClass(Dictionary<string, List<string>> dependencyClassDic, List<Jar> jars)
+        private Dictionary<string, List<string>> GetDependencyJreClass(Dictionary<string, List<string>> dependencyClassDic, List<Jar> jars)
         {
-            List<string> jreClasses = new List<string>();
+            Dictionary<string, List<string>> jreClasseDic = new Dictionary<string, List<string>>();
             Dictionary<string, List<string>> newDependencyClassDic = new Dictionary<string, List<string>>();
             foreach (string jarName in dependencyClassDic.Keys)
             {
-                List<string> classes = dependencyClassDic[jarName];
+                List<string> classes = dependencyClassDic[jarName].Distinct().ToList();
+                if (jreJarNames.Contains(jarName))
+                {
+                    jreClasseDic.Add(jarName, classes);
+                }
                 foreach (string className in classes)
                 {
                     if (analysisedClasses.Contains(jarName+className))
@@ -69,7 +74,6 @@ namespace slim_jre.Service
                         continue;
                     }
 
-                    jreClasses.AddRange(jarClass.dependencyJreClass);
                     analysisedClasses.Add(jarName+className);
                     if (jarClass.dependencySelfClass.Count > 0)
                     {
@@ -82,15 +86,15 @@ namespace slim_jre.Service
                             newDependencyClassDic.Add(jarName, jarClass.dependencySelfClass);
                         }
                     }
-                    foreach (string key in jarClass.dependencyThirdClass.Keys)
+                    foreach (string key in jarClass.dependencyOtherClass.Keys)
                     {
                         if (newDependencyClassDic.ContainsKey(key))
                         {
-                            newDependencyClassDic[key].AddRange(jarClass.dependencyThirdClass[key]);
+                            newDependencyClassDic[key].AddRange(jarClass.dependencyOtherClass[key]);
                         }
                         else
                         {
-                            newDependencyClassDic.Add(key, jarClass.dependencyThirdClass[key]);
+                            newDependencyClassDic.Add(key, jarClass.dependencyOtherClass[key]);
                         }
                     }
                 }
@@ -98,28 +102,72 @@ namespace slim_jre.Service
 
             if (newDependencyClassDic.Keys.Count > 0)
             {
-                jreClasses.AddRange(GetDependencyJreClass(newDependencyClassDic, jars));
+                Dictionary<string, List<string>> newJreClasseDic = GetDependencyJreClass(newDependencyClassDic, jars);
+                foreach (string key in newJreClasseDic.Keys)
+                {
+                    if (jreClasseDic.ContainsKey(key))
+                    {
+                        jreClasseDic[key].AddRange(newJreClasseDic[key]);
+                    }
+                    else
+                    {
+                        jreClasseDic.Add(key, newJreClasseDic[key]);
+                    }
+                }
             }
-            return jreClasses.Distinct().ToList();;
+
+            return jreClasseDic;
         }
 
-        private JarClass GetJarClass(string jarName, string className, List<Jar> jars)
+        private List<string> GetJreJarNames(Jar jar, List<Jar> jars)
+        {
+            List<string> jreJarLibs = new List<string>();
+            jreJarLibs.AddRange(jar.jreLibs);
+            foreach (Jar j in jars)
+            {
+                jreJarLibs.AddRange(j.jreLibs);
+            }
+
+            List<string> jreJarNames = new List<string>();
+            foreach (string lib in jreJarLibs.Distinct().ToList())
+            {
+                jreJarNames.Add(Path.GetFileName(lib));
+            }
+            return jreJarNames;
+        }
+
+        private Jar GetJar(string jarName, List<Jar> jars)
         {
             foreach (Jar jar in jars)
             {
                 if (jarName.Equals(jar.jarName))
                 {
-                    foreach (JarClass jc in jar.classes)
+                    return jar;
+                }
+            }
+
+            return null;
+        }
+
+        private JarClass GetJarClass(string className, Jar jar)
+        {
+            if (null != jar)
+            {
+                foreach (JarClass jc in jar.classes)
+                {
+                    if (className.Equals(jc.className))
                     {
-                        if (className.Equals(jc.className))
-                        {
-                            return jc;
-                        }
+                        return jc;
                     }
                 }
             }
 
             return null;
+        }
+        
+        private JarClass GetJarClass(string jarName, string className, List<Jar> jars)
+        {
+            return GetJarClass(className, GetJar(jarName, jars));
         }
     }
 }
