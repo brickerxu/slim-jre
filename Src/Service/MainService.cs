@@ -27,6 +27,8 @@ namespace slim_jre.Service
             List<Jar> jars = jdepsService.Verbose(jar);
             jreJarNames = GetJreJarNames(jar, jars);
             Dictionary<string, List<string>> jreClasseDic = GetDependencyJreClass(jar, jars);
+            JreService jreService = new JreService(GetLibPaths(jars));
+            jreService.ExtractJre(jreClasseDic);
         }
 
         private Dictionary<string, List<string>> GetDependencyJreClass(Jar jar, List<Jar> jars)
@@ -168,6 +170,18 @@ namespace slim_jre.Service
         private JarClass GetJarClass(string jarName, string className, List<Jar> jars)
         {
             return GetJarClass(className, GetJar(jarName, jars));
+        }
+
+        private List<string> GetLibPaths(List<Jar> jars)
+        {
+            List<string> libPaths = new List<string>();
+            foreach (Jar jar in jars)
+            {
+                libPaths.AddRange(jar.jreLibs);
+                libPaths.AddRange(jar.thirdLibs);
+            }
+
+            return libPaths.Distinct().ToList();
         }
     }
 }

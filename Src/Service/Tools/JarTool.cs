@@ -2,6 +2,7 @@
 using slim_jre.Base;
 using slim_jre.Entity;
 using slim_jre.Os;
+using slim_jre.Utils;
 
 namespace slim_jre.Service.Tools
 {
@@ -21,6 +22,24 @@ namespace slim_jre.Service.Tools
             }
 
             return manifestPath;
+        }
+        
+        public static bool UnJar(string unPath, string jarPath) 
+        {
+            if (!File.Exists(jarPath))
+            {
+                return false;
+            }
+            string command = Dir.jarPath + " xf " + jarPath;
+            Directory.CreateDirectory(unPath);
+            string result = CommandExecutor.Execute(unPath, command);
+            return CommonConstant.EOF.Equals(result);
+        }
+
+        public static void CreateJar(string jarPath, string manifestPath, string sourceDir)
+        {
+            string command = Dir.jarPath + " cvfm " + jarPath + " " + manifestPath + " -C " + sourceDir + " .";
+            CommandExecutor.Execute(null, command);
         }
     }
 }

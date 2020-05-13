@@ -31,7 +31,7 @@ namespace slim_jre.Utils
             }
         }
 
-        public static List<string> GetFile(string path, string fileType)
+        public static List<string> GetFiles(string path, string fileType)
         {
             List<string> fileList = new List<string>();
             if (File.Exists(path))
@@ -45,7 +45,7 @@ namespace slim_jre.Utils
                 string[] dirs = Directory.GetDirectories(path);
                 foreach (string dir in dirs)
                 {
-                    fileList.AddRange(GetFile(dir, fileType));
+                    fileList.AddRange(GetFiles(dir, fileType));
                 }
                 string[] files = Directory.GetFiles(path);
                 foreach (string file in files)
@@ -64,6 +64,31 @@ namespace slim_jre.Utils
         public static string GetFileType(string filePath)
         {
             return filePath.Substring(filePath.LastIndexOf('.') + 1);
+        }
+
+        public static void CopyDirectory(string sourcePath, string destPath, bool overwrite)
+        {
+            if (File.Exists(sourcePath))
+            {
+                if (!Directory.Exists(destPath))
+                {
+                    Directory.CreateDirectory(destPath);
+                }
+                File.Copy(sourcePath, Path.Combine(destPath, Path.GetFileName(sourcePath)), overwrite);
+            } else if (Directory.Exists(sourcePath))
+            {
+                string newDestPath = Path.Combine(destPath, Path.GetFileName(sourcePath));
+                string[] dirs = Directory.GetDirectories(sourcePath);
+                foreach (string dir in dirs)
+                {
+                    CopyDirectory(dir, newDestPath, overwrite);
+                }
+                string[] files = Directory.GetFiles(sourcePath);
+                foreach (string file in files)
+                {
+                    CopyDirectory(file, newDestPath, overwrite);
+                }
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using slim_jre.Base;
@@ -81,6 +81,7 @@ namespace slim_jre.Service.Receivers
                     jar.jarName = jarName;
                     jar.thirdLibs.Clear();
                     jar.jreLibs.Clear();
+                    jars.Add(jar);
                     lastJarName = jarName;
                     Adapter.dAppendText(jarName);
                 }
@@ -91,8 +92,8 @@ namespace slim_jre.Service.Receivers
                     jars.Add(newJar);
                     currentJar = newJar;
                     lastJarName = jarName;
+                    Adapter.dAppendText(jarName);
                 }
-                Adapter.dAppendText(dependencyJarPath);
                 if (dependencyJarPath.StartsWith(Dir.jreDirPath))
                 {
                     currentJar.jreLibs.Add(dependencyJarPath);

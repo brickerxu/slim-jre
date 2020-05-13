@@ -65,6 +65,7 @@
     <Compile Include="Src\Os\Interfaces\ICommandReceiver.cs" />
     <Compile Include="Src\Service\JarService.cs" />
     <Compile Include="Src\Service\JdepsService.cs" />
+    <Compile Include="Src\Service\JreService.cs" />
     <Compile Include="Src\Service\MainService.cs" />
     <Compile Include="Src\Service\Receivers\JdepsCommandReceiver.cs" />
     <Compile Include="Src\Service\Receivers\RegexConstant.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Src\Utils\FileUtils.cs" />
     <Compile Include="Src\Utils\Md5Utils.cs" />
     <Compile Include="Src\Utils\StringUtils.cs" />
+    <Compile Include="Src\Utils\TimeUtils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

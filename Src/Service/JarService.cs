@@ -51,7 +51,7 @@ namespace slim_jre.Service
         private List<string> GetJreJars()
         {
             string jreLibDirPath = Path.Combine(Dir.jreDirPath, "lib");
-            return FileUtils.GetFile(jreLibDirPath, "jar");
+            return FileUtils.GetFiles(jreLibDirPath, "jar");
         }
     }
 }
