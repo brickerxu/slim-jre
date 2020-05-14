@@ -67,9 +67,11 @@
     <Compile Include="Src\Service\JdepsService.cs" />
     <Compile Include="Src\Service\JreService.cs" />
     <Compile Include="Src\Service\MainService.cs" />
+    <Compile Include="Src\Service\Receivers\JavaVerboseReceiver.cs" />
     <Compile Include="Src\Service\Receivers\JdepsCommandReceiver.cs" />
     <Compile Include="Src\Service\Receivers\RegexConstant.cs" />
     <Compile Include="Src\Service\Tools\JarTool.cs" />
+    <Compile Include="Src\Service\Tools\JavaTool.cs" />
     <Compile Include="Src\Service\Tools\JdepsTool.cs" />
     <Compile Include="Src\Utils\FileUtils.cs" />
     <Compile Include="Src\Utils\Md5Utils.cs" />

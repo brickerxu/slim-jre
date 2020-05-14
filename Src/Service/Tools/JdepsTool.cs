@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Text;
+﻿using System.Text;
 using slim_jre.Base;
 using slim_jre.Entity;
 using slim_jre.Os;
@@ -12,7 +11,7 @@ namespace slim_jre.Service.Tools
         public static void VerboseClass(Jar jar, ICommandReceiver receiver)
         {
             StringBuilder command = new StringBuilder(Dir.jdepsPath);
-            command.Append(" -verbose:class ").Append(jar.path);
+            command.Append(" -verbose:class -R ").Append(jar.path);
             foreach (string lib in jar.thirdLibs)
             {
                 command.Append(" ").Append(lib);

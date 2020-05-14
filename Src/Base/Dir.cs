@@ -22,6 +22,11 @@ namespace slim_jre.Base
         public static string jdkDirPath;
 
         /**
+         * java.exe工具路径
+         */
+        public static string javaPath;
+
+        /**
          * jar.exe工具路径
          */
         public static string jarPath;
@@ -44,6 +49,7 @@ namespace slim_jre.Base
             if (StringUtils.isNotEmpty(jdkDirPath))
             {
                 string jdkBinPath = Path.Combine(jdkDirPath, "bin");
+                javaPath = Path.Combine(jdkBinPath, "java.exe");
                 jarPath = Path.Combine(jdkBinPath, "jar.exe");
                 jdepsPath = Path.Combine(jdkBinPath, "jdeps.exe");
                 jreDirPath = Path.Combine(jdkDirPath, "jre");

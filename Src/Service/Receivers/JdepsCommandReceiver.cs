@@ -1,5 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using slim_jre.Base;
 using slim_jre.Entity;
@@ -47,11 +47,17 @@ namespace slim_jre.Service.Receivers
                 }
                 else
                 {
-                    if (!currentJarClass.dependencyOtherClass.ContainsKey(dependencyJarName))
+                    string jarPath = GetJarPath(dependencyJarName);
+                    if (StringUtils.isEmpty(jarPath))
                     {
-                        currentJarClass.dependencyOtherClass.Add(dependencyJarName, new List<string>());
+                        return;
                     }
-                    currentJarClass.dependencyOtherClass[dependencyJarName].Add(dependencyClassName);
+
+                    if (!currentJarClass.dependencyOtherClass.ContainsKey(jarPath))
+                    {
+                        currentJarClass.dependencyOtherClass.Add(jarPath, new List<string>());
+                    }
+                    currentJarClass.dependencyOtherClass[jarPath].Add(dependencyClassName);
                     
                 }
 
@@ -103,6 +109,28 @@ namespace slim_jre.Service.Receivers
                     currentJar.thirdLibs.Add(dependencyJarPath); 
                 }
             }
+        }
+
+        private string GetJarPath(string jarName)
+        {
+            foreach (string lib in currentJar.jreLibs)
+            {
+                string libName = Path.GetFileName(lib);
+                if (jarName.Equals(libName))
+                {
+                    return lib;
+                }
+            }
+            foreach (string lib in currentJar.thirdLibs)
+            {
+                string libName = Path.GetFileName(lib);
+                if (jarName.Equals(libName))
+                {
+                    return lib;
+                }
+            }
+
+            return null;
         }
     }
 }

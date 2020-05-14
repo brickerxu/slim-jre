@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using slim_jre.Base;
@@ -10,26 +9,17 @@ namespace slim_jre.Service
 {
     public class JreService
     {
-        private List<string> libPaths;
-
-        public JreService(List<string> libPaths)
-        {
-            this.libPaths = libPaths;
-        }
-
-        public void ExtractJre(Dictionary<string, List<string>> jreClasseDic)
+        public void ExtractJre(Dictionary<string, List<string>> jreClassDic)
         {
             string currentTime = TimeUtils.GetTimeStamp();
-            foreach (string jarName in jreClasseDic.Keys)
+            foreach (string jarPath in jreClassDic.Keys)
             {
-                string jarPath = GetJarPath(jarName);
+                string jarName = Path.GetFileName(jarPath);
                 string unJarPath = Path.Combine(Dir.tempDirPath, currentTime, "original_" + jarName);
                 string newJarPath = Path.Combine(Dir.tempDirPath, currentTime, "new_" + jarName);
                 if (JarTool.UnJar(unJarPath, jarPath))
                 {
-                    List<string> classes = jreClasseDic[jarName].Distinct().ToList();
-                    // java/lang/VirtualMachineError
-                    // java/lang/IllegalMonitorStateException
+                    List<string> classes = jreClassDic[jarPath].Distinct().ToList();
                     foreach (string className in classes)
                     {
                         string classPath = GetClassPath(unJarPath, className);
@@ -51,20 +41,6 @@ namespace slim_jre.Service
             }
         }
         
-
-        private string GetJarPath(string jarName)
-        {
-            foreach (string lp in libPaths)
-            {
-                if (jarName.Equals(Path.GetFileName(lp)))
-                {
-                    return lp;
-                }
-            }
-
-            return null;
-        }
-
         private string GetClassPath(string parentPath, string className)
         {
             string path = parentPath;
